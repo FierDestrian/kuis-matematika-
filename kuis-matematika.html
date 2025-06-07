@@ -1,0 +1,705 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Kuis Matematika Kelas X</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; }
+    .hidden { display: none; }
+    .question { font-size: 18px; margin: 20px 0; }
+    .option { margin: 5px 0; }
+    #leaderboard { margin-top: 30px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background-color: #f5f5f5; }
+    .btn { padding: 8px 16px; margin: 10px 5px; }
+  </style>
+</head>
+<body>
+
+<h1>Kuis Matematika Kelas X</h1>
+<div id="start-screen">
+  <p>Masukkan nama kamu untuk memulai kuis:</p>
+  <input type="text" id="nama" placeholder="Nama lengkap" />
+  <button class="btn" onclick="mulaiKuis()">Mulai Kuis</button>
+</div>
+
+<div id="quiz-screen" class="hidden">
+  <p><strong>Nama:</strong> <span id="display-nama"></span></p>
+  <div id="soal"></div>
+  <div id="opsi"></div>
+  <button class="btn" id="lanjut" onclick="lanjut()" disabled>Lanjut</button>
+</div>
+
+<div id="hasil-screen" class="hidden">
+  <h2>Skor Akhir Kamu: <span id="skor-akhir"></span></h2>
+  <div id="leaderboard">
+    <h3>Leaderboard 10 Besar</h3>
+    <table>
+      <thead><tr><th>Nama</th><th>Skor</th></tr></thead>
+      <tbody id="leaderboard-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+const questions = [
+   {
+    question: "Diketahui nilai dari $\\sin \\beta = \\frac{2}{3}$. Tentukan nilai dari $\\cos \\beta$ jika $\\beta$ adalah sudut lancip.",
+    options: [
+      "$\\frac{\\sqrt{5}}{3}$",
+      "$\\frac{\\sqrt{13}}{3}$",
+      "$\\frac{\\sqrt{8}}{3}$",
+      "$\\frac{\\sqrt{7}}{3}$",
+      "$\\frac{\\sqrt{2}}{3}$"
+    ],
+    answer: 1,
+    solution: "Karena $\\beta$ adalah sudut lancip, maka berlaku identitas trigonometri: \n\n" +
+      "$\\sin^2 \\beta + \\cos^2 \\beta = 1$\n" +
+      "Diketahui $\\sin \\beta = \\frac{2}{3}$, maka:\n" +
+      "$\\left(\\frac{2}{3}\\right)^2 + \\cos^2 \\beta = 1$\n" +
+      "$\\frac{4}{9} + \\cos^2 \\beta = 1$\n" +
+      "$\\cos^2 \\beta = 1 - \\frac{4}{9} = \\frac{5}{9}$\n" +
+      "$\\cos \\beta = \\sqrt{\\frac{5}{9}} = \\frac{\\sqrt{5}}{3}$\n" +
+      "Karena $\\beta$ sudut lancip (kuadran I), maka $\\cos \\beta$ bernilai positif."
+  },
+{
+    question: "Nilai dari $\\cos 45^\\circ$ adalah …",
+    options: [
+      "$\\frac{1}{2}$",
+      "$\\frac{\\sqrt{2}}{2}$",
+      "$\\frac{\\sqrt{3}}{2}$",
+      "$\\frac{1}{\\sqrt{2}}$",
+      "$\\frac{\\sqrt{3}}{3}$"
+    ],
+    answer: 1,
+    solution: "Sudut $45^\\circ$ termasuk sudut istimewa. Nilai cosinus untuk sudut ini adalah:\n" +
+      "$\\cos 45^\\circ = \\frac{\\sqrt{2}}{2}$"
+  },
+{
+    question: "Diberikan sebuah segitiga sama sisi ABC. Garis TC merupakan tinggi segitiga dan panjangnya adalah 12 cm. Tentukan panjang sisi segitiga ABC.<br><img src='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEidi-JMpqGT9QjP1axmiP-3IZmgMvL4XJgOFa8UOcl7YvnXecLb8bOZZzqXBAGiK6x_w4eoo4QY8lHCN7O_VnyyLTEtXDSoVd2qggrgA2sxQtxG0lv3mXgZ4P7_EI6o-50_RMp6amOXdFecie4wH79tr8RiyRizm-N9uhsVFVEsAjKN7p4ELzxmViQvh-Q/s171/3.png'><br>",
+    options: [
+      "12 cm",
+      "18 cm",
+      "24 cm",
+      "8√3 cm",
+      "16 cm"
+    ],
+    answer: 3,
+    solution: "Karena segitiga ABC sama sisi, maka tinggi TC membagi alas AB menjadi dua bagian yang sama panjang. \n" +
+      "Misal panjang sisi segitiga adalah $s$, maka setengah alas adalah $\\frac{s}{2}$. \n" +
+      "Gunakan Teorema Pythagoras pada segitiga TCB:\n" +
+      "$TC^2 + \\left(\\frac{s}{2}\\right)^2 = s^2$\n" +
+      "$12^2 + \\left(\\frac{s}{2}\\right)^2 = s^2$\n" +
+      "$144 + \\frac{s^2}{4} = s^2$\n" +
+      "Kalikan semua dengan 4:\n" +
+      "$576 + s^2 = 4s^2$\n" +
+      "$576 = 3s^2$\n" +
+      "$s^2 = 192$\n" +
+      "$s = \\sqrt{192} = \\sqrt{64 \\cdot 3} = 8\\sqrt{3}$\n" +
+      "Jadi panjang sisi segitiga adalah $8\\sqrt{3}$ cm."
+  },
+{
+    question: "Jika diskriminan dari persamaan $x^2 - x - m = 0$ sama dengan nol, maka nilai $m = \\ldots$",
+    options: [
+"-1",
+  "0",
+  "1",
+  "$-\\frac{1}{4}$",
+  "$\\frac{1}{2}$"
+    ],
+    answer: 3,
+    solution: "Diskriminan dari persamaan kuadrat $ax^2 + bx + c = 0$ adalah:\n" +
+      "$D = b^2 - 4ac$\n" +
+      "Untuk $x^2 - x - m = 0$, diperoleh:\n" +
+      "- $a = 1$, $b = -1$, $c = -m$\n" +
+      "$D = (-1)^2 - 4(1)(-m) = 1 + 4m$\n" +
+      "Jika diskriminan = 0, maka:\n" +
+      "$1 + 4m = 0$\n" +
+      "$4m = -1$\n" +
+      "$m = -\\frac{1}{4}$"
+  },
+{
+    question: "Himpunan penyelesaian dari pertidaksamaan $x^2 - x > 90$ adalah ….",
+    options: [
+      "$x < -10$ atau $x > 9$",
+      "$x < -10$ dan $x > 9$",
+      "$x < -9$ dan $x > 10$",
+      "$-9 < x < 10$",
+      "$x < -9$ atau $x > 10$"
+    ],
+    answer: 4,
+    solution: "Ubah ke bentuk kuadrat: \n" +
+      "$x^2 - x - 90 > 0$\n" +
+      "Faktorkan:\n" +
+      "$(x - 10)(x + 9) > 0$\n" +
+      "Titik nol: $x = -9$ dan $x = 10$\n" +
+      "Gunakan garis bilangan:\n" +
+      " - Interval $x < -9$: ambil $x = -10$, hasil negatif\n" +
+      " - Interval $-9 < x < 10$: ambil $x = 0$, hasil negatif\n" +
+      " - Interval $x > 10$: ambil $x = 11$, hasil positif\n" +
+      "Penyelesaian: $x < -9$ atau $x > 10$"
+  },
+{
+    question: "Salah satu akar dari persamaan kuadrat $x^2 + 3px + (p + 2) = 0$ adalah 6. Maka nilai $p = \\ldots$",
+    options: [
+      "-1",
+      "-2",
+      "1",
+      "2",
+      "3"
+    ],
+    answer: 1,
+    solution: "Gunakan fakta bahwa 6 adalah akar dari persamaan:\n" +
+      "$x^2 + 3px + (p + 2) = 0$\n" +
+      "Substitusi $x = 6$ ke persamaan:\n" +
+      "$36 + 18p + p + 2 = 0$\n" +
+      "$19p + 38 = 0$\n" +
+      "$p = -\\frac{38}{19} = -2$"
+  },
+{
+    question: "Diketahui data nilai ujian matematika dari 10 siswa adalah: 70, 85, 60, 75, 90, 80, 65, 95, 85, 80. Berapakah median dari nilai siswa tersebut?",
+    options: [
+      "75",
+      "77.5",
+      "80",
+      "82.5",
+      "85"
+    ],
+    answer: 2,
+    solution: "Urutkan data: 60, 65, 70, 75, 80, 80, 85, 85, 90, 95\n" +
+      "Karena jumlah data genap (10), maka median adalah rata-rata nilai ke-5 dan ke-6:\n" +
+      "$\\text{Median} = \\frac{80 + 80}{2} = 80$"
+  },
+{
+    question: "Rata-rata nilai ulangan harian dari sebuah kelas adalah 78. Jika terdapat 30 siswa dalam kelas tersebut, maka total jumlah nilai seluruh siswa adalah ….",
+    options: [
+      "2240",
+      "2280",
+      "2340",
+      "2380",
+      "2430"
+    ],
+    answer: 2,
+    solution: "Gunakan rumus rata-rata:\n" +
+      "$\\text{Rata-rata} = \\frac{\\text{Jumlah nilai}}{\\text{Banyak siswa}}$\n" +
+      "Maka:\n" +
+      "$78 = \\frac{\\text{Jumlah nilai}}{30}$\n" +
+      "$\\text{Jumlah nilai} = 78 \\times 30 = 2340$"
+  },
+{
+    question: "Agensi Model X mencatat data berat badan bulan Juni dan diketahui modusnya adalah 55 kg. Hal ini berarti …",
+    options: [
+      "Semua model memiliki berat badan 55 kg",
+      "Rata-rata berat badan model adalah 55 kg",
+      "Berat badan yang paling sering muncul adalah 55 kg",
+      "Berat badan 55 kg merupakan data yang paling besar",
+      "Berat badan 55 kg merupakan data tengah"
+    ],
+    answer: 2,
+    solution: "Modus adalah data yang paling sering muncul dalam suatu kumpulan data.\n" +
+      "Jadi, jika modus = 55 kg, maka berat badan 55 kg adalah yang paling sering dimiliki oleh para model."
+  },
+{
+    question: "<br><img src='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgqQ1zDJ7lr3Gd91Rzun6s8Vz_H94Isq2_Q3xa69qmx63qCK8LUyckyZblyVjNJEUolNVVamUVjuynZ8GB7yOeWPG_BmbgPKazxkHl-weqS1kTMHfUWlBE_bWCZ8vHNK5ZF1vi12e9Bn_dIfi1s0mtTN8EHym78q7H-A0dc4YgarkRzxzIe_WTPDJnsihI/s342/10.png'><br>Sebuah marka kejut dipasang melintang pada jalan dengan sudut $30^\\circ$ terhadap jalan. Jika panjang marka kejut adalah 8 meter, tentukan lebar jalan tersebut!",
+    options: [
+      "2 meter",
+      "4 meter",
+      "6 meter",
+      "8 meter",
+      "10 meter"
+    ],
+    answer: 1,
+    solution: "Gunakan trigonometri segitiga siku-siku:\n" +
+      "$\\sin(30^\\circ) = \\frac{\\text{lebar jalan}}{8}$\n" +
+      "Karena $\\sin(30^\\circ) = \\frac{1}{2}$, maka:\n" +
+      "$\\frac{1}{2} = \\frac{\\text{lebar jalan}}{8}$\n" +
+      "$\\text{lebar jalan} = 8 \\times \\frac{1}{2} = 4\\ \\text{meter}$"
+  },
+{
+    question: "270° jika dinyatakan dalam satuan radian (rad) adalah …",
+    options: [
+      "$\\frac{\\pi}{2}$",
+      "$\\frac{5\\pi}{4}$",
+      "$\\frac{3\\pi}{2}$",
+      "$\\frac{7\\pi}{4}$",
+      "$2\\pi$"
+    ],
+    answer: 2,
+    solution: "Gunakan konversi derajat ke radian:\n" +
+      "$270^\\circ = 270 \\times \\frac{\\pi}{180} = \\frac{3\\pi}{2}$"
+  },
+{
+    question: "$\\frac{1}{2}\\pi$ rad jika dinyatakan dalam satuan derajat adalah …",
+    options: [
+      "45°",
+      "90°",
+      "120°",
+      "135°",
+      "180°"
+    ],
+    answer: 1,
+    solution: "Gunakan rumus konversi radian ke derajat:\n" +
+      "$\\frac{1}{2}\\pi \\times \\frac{180^\\circ}{\\pi} = 90^\\circ$"
+  },
+{
+    question: "Diberikan sebuah segitiga siku-siku dengan alas 16 cm, tinggi 12 cm, dan sudut $\\theta$ dibentuk antara sisi miring dan alas. Tentukan nilai $\\cos\\, \\theta$!<br><img src='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmxXL_kQjcmtsCfGhl2DUqqz3mgREs_3nS1vmUQMJ4F-qsdYX3DwVnOMUSNMMRpH9XIa6Ps0DgwNsK8DBTC4Gfl6ik1_uWAgDAhp6oyHYuBKx570X42LWsPECjnh8rDagTw17nGUgG-0deYVGPczrICrBD9RNnfqRqzGuL1SHZzNOCeabtp2LL4s3tFYo/s275/13.png'><br>",
+    options: [
+      "$\\frac{3}{5}$",
+      "$\\frac{3}{4}$",
+      "$\\frac{4}{5}$",
+      "$\\frac{5}{4}$",
+      "$\\frac{5}{3}$"
+    ],
+    answer: 2,
+    solution: "Gunakan teorema Pythagoras untuk sisi miring:\n" +
+      "$\\text{miring} = \\sqrt{16^2 + 12^2} = \\sqrt{400} = 20$\n" +
+      "Kemudian gunakan rumus cosinus:\n" +
+      "$\\cos\\, \\theta = \\frac{\\text{alas}}{\\text{miring}} = \\frac{16}{20} = \\frac{4}{5}$"
+  },
+{
+    question: "Seorang anak berdiri sejauh 20 meter dari sebuah menara. Jika sudut elevasi ke puncak menara adalah $60^\\circ$, berapakah tinggi menara tersebut?\nGunakan $\\tan 60^\\circ = \\sqrt{3} \\approx 1{,}7$.<br><img src='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjoV3Zevxg0LuUNO5MGGCOJS4YxcN-8u09_tRO56IrIEjbPsUIu5UW5_sJ9P4gVOKLpVfkKlvC4Rve50NPoKfIh_IbtUnAjrSlLED8N4cay9uZZQ2XMUfWQ08SmAI2SkAurhILDB1Jm0U3z2u2JLN2Q0_Ul6M5qxV2nTVpAFvX6XuFF-LPQvDujnxd2gKc/s295/14.png'><br>",
+    options: [
+      "10 meter",
+      "20 meter",
+      "28 meter",
+      "30 meter",
+      "34 meter"
+    ],
+    answer: 4,
+    solution: "Gunakan rumus trigonometri:\n" +
+      "$\\tan(\\theta) = \\frac{\\text{tinggi}}{\\text{alas}}$\n" +
+      "$\\tan 60^\\circ = 1{,}7 = \\frac{\\text{tinggi}}{20}$\n" +
+      "$\\text{tinggi} = 1{,}7 \\times 20 = 34 \\text{ meter}$"
+  },
+{
+    question: "Jika $x_1$ dan $x_2$ adalah akar-akar dari persamaan $x^2 + x - 2 = 0$, maka nilai dari:\n$\\frac{1}{x_1} + \\frac{1}{x_2}$\nadalah ….",
+    options: [
+      "1",
+      "$\\frac{1}{2}$",
+      "$-\\frac{1}{2}$",
+      "2",
+      "$-2$"
+    ],
+    answer: 1,
+    solution: "Gunakan rumus:\n" +
+      "$\\frac{1}{x_1} + \\frac{1}{x_2} = \\frac{x_1 + x_2}{x_1 x_2}$\n" +
+      "Dari $x^2 + x - 2 = 0$:\n" +
+      "$x_1 + x_2 = -b/a = -1$ dan $x_1 x_2 = c/a = -2$\n" +
+      "$\\frac{-1}{-2} = \\frac{1}{2}$"
+  },
+{
+    question: "Bentuk faktorisasi dari $8x^2 + 18x - 5$ adalah …",
+    options: [
+      "$(4x + 1)(2x + 5)$",
+      "$(2x - 1)(4x + 5)$",
+      "$(4x - 1)(2x + 5)$",
+      "$(2x - 5)(4x + 1)$",
+      "$(8x - 1)(x + 5)$"
+    ],
+    answer: 2,
+    solution: "Gunakan metode pemfaktoran trinom:\n" +
+      "1. Cari dua bilangan dengan hasil kali = $8 \\times (-5) = -40$, dan jumlah = 18 → 20 dan -2\n" +
+      "2. Ubah: $8x^2 + 20x - 2x - 5$\n" +
+      "3. Kelompokkan: $(8x^2 + 20x) - (2x + 5)$\n" +
+      "4. Faktorkan: $4x(2x + 5) -1(2x + 5)$\n" +
+      "5. Hasil: $(4x - 1)(2x + 5)$"
+  },
+{
+    question: "Penyelesaian dari pertidaksamaan berikut:\n$-2 < 3x + 1 < 7$\nadalah …",
+    options: [
+      "$x < -1$ atau $x > 2$",
+      "$-1 < x < 2$",
+      "$x < -2$ dan $x > 7$",
+      "$-2 < x < 7$",
+      "$-3 < x < 6$"
+    ],
+    answer: 1,
+    solution: "Langkah 1: Kurangi semua ruas dengan 1:\n" +
+      "$-2 - 1 < 3x < 7 - 1 \\Rightarrow -3 < 3x < 6$\n" +
+      "Langkah 2: Bagi semua ruas dengan 3:\n" +
+      "$\\frac{-3}{3} < x < \\frac{6}{3} \\Rightarrow -1 < x < 2$"
+  },
+{
+    question: "Persamaan kuadrat $2x^2 + 6x - 12 = 0$ mempunyai akar-akar $x_1$ dan $x_2$. Nilai dari $x_1 + x_2$ adalah …",
+    options: [
+      "$-3$",
+      "3",
+      "$-6$",
+      "6",
+      "$-9$"
+    ],
+    answer: 0,
+    solution: "Gunakan rumus:\n" +
+      "$x_1 + x_2 = -\\frac{b}{a}$\n" +
+      "Dengan $a = 2$, $b = 6$, maka:\n" +
+      "$x_1 + x_2 = -\\frac{6}{2} = -3$"
+  },
+{
+    question: "Persamaan kuadrat yang akar-akarnya 3 lebih besar dari akar-akar persamaan $2x^2 - 7x + 13 = 0$ adalah …",
+    options: [
+      "$2x^2 - x + 13 = 0$",
+      "$2x^2 - 13x + 52 = 0$",
+      "$2x^2 - 19x + 52 = 0$",
+      "$x^2 - 4x + 1 = 0$",
+      "$2x^2 - 19x + 40 = 0$"
+    ],
+    answer: 2,
+    solution: "Jika akar baru adalah 3 lebih besar, maka gunakan substitusi $x = y + 3$.\n" +
+      "Substitusi ke dalam persamaan lama:\n" +
+      "$2(x - 3)^2 - 7(x - 3) + 13 = 0$\n" +
+      "→ $2(x^2 - 6x + 9) - 7x + 21 + 13 = 0$\n" +
+      "→ $2x^2 - 12x + 18 - 7x + 21 + 13 = 0$\n" +
+      "→ $2x^2 - 19x + 52 = 0$"
+  },
+ {
+    question: "Histogram pada gambar menunjukkan nilai tes matematika di suatu kelas:\n\n57 (2 siswa), 62 (4 siswa), 67 (18 siswa), 72 (14 siswa), 77 (12 siswa)\n\nNilai rata-rata dari data tersebut adalah …<br><img src='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEizKdOu2LzXX6LL2VErNZvsZNkrktV0_xHddUffZaB9eWz9FqkMiPOFAOl7T7WetYW7z6kfYQgsPWuhmxGf6BOIMiuUPq_XhvYq-8sIYkV72-NcLvtlCmKkRafBv3W9uRlfAZIFP0aGk9egVSS00pxfMSVVNrq0vPV2W12mkKkoFTe5iy6PJNUOr0gu890/s368/20.png'><br>",
+    options: [
+      "67",
+      "68",
+      "70",
+      "72",
+      "74"
+    ],
+    answer: 2,
+    solution: "Hitung nilai total:\n" +
+      "$57\\times2 + 62\\times4 + 67\\times18 + 72\\times14 + 77\\times12 = 3500$\n" +
+      "Jumlah siswa: $2 + 4 + 18 + 14 + 12 = 50$\n" +
+      "Rata-rata: $\\frac{3500}{50} = 70$"
+  },
+ {
+    question: `Tabel berikut menunjukkan data skor dari suatu tes:<br><br>
+      <table border="1" cellspacing="0" cellpadding="5">
+        <thead>
+          <tr>
+            <th>Interval Skor</th>
+            <th>Frekuensi (f)</th>
+            <th>Titik Tengah (x)</th>
+            <th>f × x</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>0 – 4</td><td>4</td><td>2</td><td>8</td></tr>
+          <tr><td>7 – 9</td><td>6</td><td>8</td><td>48</td></tr>
+          <tr><td>10 – 14</td><td>9</td><td>12</td><td>108</td></tr>
+          <tr style="background-color: #f9e79f;"><td>15 – 19</td><td>14</td><td>17</td><td>238</td></tr>
+          <tr><td>20 – 24</td><td>10</td><td>22</td><td>220</td></tr>
+          <tr><td>25 – 29</td><td>5</td><td>27</td><td>135</td></tr>
+          <tr><td>30 – 34</td><td>2</td><td>32</td><td>64</td></tr>
+          <tr><th>Total</th><th>50</th><td></td><th>821</th></tr>
+        </tbody>
+      </table><br>
+      Rataan skor dari data pada tabel adalah …`,
+    options: [
+      "15,80",
+      "16,42",
+      "17,50",
+      "18,00",
+      "19,20"
+    ],
+    answer: 1,
+    solution: `Hitung nilai tengah tiap kelas, kemudian gunakan rumus rata-rata:<br><br>
+      \\[
+      \\bar{x} = \\frac{\\sum x_i \\cdot f_i}{\\sum f_i} = \\frac{821}{50} = 16{,}42
+      \\]`
+  },
+      {
+    question: `Perhatikan tabel berat badan berikut:<br><br>
+      <table border="1" cellspacing="0" cellpadding="5">
+        <thead>
+          <tr>
+            <th>Berat (kg)</th>
+            <th>Frekuensi (f)</th>
+            <th>Titik Tengah (x)</th>
+            <th>f × x</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>31 – 36</td><td>4</td><td>33.5</td><td>134</td></tr>
+          <tr><td>37 – 42</td><td>6</td><td>39.5</td><td>237</td></tr>
+          <tr><td>43 – 48</td><td>9</td><td>45.5</td><td>409.5</td></tr>
+          <tr style="background-color: #f9e79f;"><td>49 – 54</td><td>14</td><td>51.5</td><td>721</td></tr>
+          <tr><td>55 – 60</td><td>10</td><td>57.5</td><td>575</td></tr>
+          <tr><td>61 – 66</td><td>5</td><td>63.5</td><td>317.5</td></tr>
+          <tr><td>67 – 72</td><td>2</td><td>69.5</td><td>139</td></tr>
+          <tr><th>Total</th><th>50</th><td></td><th>2533</th></tr>
+        </tbody>
+      </table><br>
+    Modus dari data tersebut adalah … kg.`,
+    options: [
+      "50",
+      "51",
+      "51,83",
+      "52",
+      "53"
+    ],
+    answer: 2,
+    solution: "Modus = $L + \\frac{f_1 - f_0}{(f_1 - f_0) + (f_1 - f_2)} \\cdot p$\n" +
+              "Kelas modus: 49–54, $L = 48.5$, $f_1 = 14$, $f_0 = 9$, $f_2 = 10$, $p = 6$\n" +
+              "$\\text{Modus} = 48.5 + \\frac{5}{9} \\cdot 6 = 51.83$"
+  },
+{
+    question: "Diagram berikut menunjukkan berat badan (dalam kg) dari 40 siswa:\n\n" +
+              "<br><img src='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhoEmR3WKqmug8ZhX7u10mvlJnJFIn1RsZMIvmuni4E6coBiQ8WmE6UsQBRehLXR-oVmJpQdVzv3NhHpgzTJuAArjDvjyxa9JdjZkbOoBvrRrro-LN1GlBLzFKnrqFr0D9p6biHhHW90wA2s-kIbujypsZIeMY_XzZPL-kaqrwdh5pqi41UYcs4kXr7kA0/s361/23.png'><br>\n\n" +
+              "Modus dari data tersebut adalah … kg.",
+    options: [
+      "46,0",
+      "47,0",
+      "47,5",
+      "48,0",
+      "48,5"
+    ],
+    answer: 2,
+    solution: "Modus = $L + \\frac{f_1 - f_0}{(f_1 - f_0) + (f_1 - f_2)} \\cdot p$\n" +
+              "Kelas modus: 45–49, $L = 44.5$, $f_1 = 12$, $f_0 = 6$, $f_2 = 8$, $p = 5$\n" +
+              "$\\text{Modus} = 44.5 + \\frac{6}{10} \\cdot 5 = 47.5$"
+  },
+{
+    question: "Nilai rata-rata ujian dari 40 siswa adalah 5,2. Setelah seorang siswa mengikuti ujian susulan, nilai rata-rata menjadi 5,25.\n\n" +
+              "Nilai siswa yang mengikuti ujian susulan adalah …",
+    options: [
+      "6",
+      "6,5",
+      "7",
+      "7,25",
+      "8"
+    ],
+    answer: 3,
+    solution: "Jumlah nilai awal: $40 \\times 5{,}2 = 208$\n" +
+              "Jumlah nilai setelah 1 siswa ikut susulan: $41 \\times 5{,}25 = 215{,}25$\n" +
+              "Nilai siswa susulan: $215{,}25 - 208 = 7{,}25$"
+  },
+{
+    question: "Diketahui barisan aritmetika: 4, 1, -2, -5, ...\n\nSuku ke-10 dari barisan tersebut adalah …",
+    options: [
+      "-21",
+      "-22",
+      "-23",
+      "-24",
+      "-25"
+    ],
+    answer: 2,
+    solution: "Barisan aritmetika dengan $a = 4$ dan $b = -3$\n" +
+              "Gunakan rumus: $U_n = a + (n - 1) \\cdot b$\n" +
+              "$U_{10} = 4 + (10 - 1) \\cdot (-3) = 4 - 27 = -23$"
+  },
+{
+    question: "Diketahui barisan geometri dengan suku ke-5 adalah 162 dan suku ke-2 adalah -6.\n\nRasio barisan tersebut adalah …",
+    options: [
+      "3",
+      "-2",
+      "2",
+      "-1",
+      "-3"
+    ],
+    answer: 4,
+    solution: "$U_5 = a \\cdot r^4 = 162$, $U_2 = a \\cdot r = -6$\n" +
+              "Bagi: $\\frac{U_5}{U_2} = \\frac{a r^4}{a r} = r^3 = \\frac{162}{-6} = -27$\n" +
+              "Maka $r = \\sqrt[3]{-27} = -3$"
+  },
+{
+    question: "Suku ke-n suatu barisan bilangan dirumuskan: $U_n = 15 - 3n$\n\nSuku ke-15 dari barisan tersebut adalah …",
+    options: [
+      "-45",
+      "-35",
+      "-15",
+      "-30",
+      "0"
+    ],
+    answer: 3,
+    solution: "Gunakan rumus $U_n = 15 - 3n$\n" +
+              "$U_{15} = 15 - 3(15) = 15 - 45 = -30$"
+  },
+{
+    question: "Tiga bilangan membentuk barisan geometri. Jumlah ketiga bilangan itu adalah 26 dan hasil kalinya 216.\n\nJumlah bilangan pertama dan ketiga dari barisan tersebut adalah …",
+    options: [
+      "18",
+      "22",
+      "24",
+      "20",
+      "26"
+    ],
+    answer: 3,
+    solution: "Misalkan barisan: $a, ar, ar^2$\n" +
+              "Jumlah: $a(1 + r + r^2) = 26$, Hasil kali: $(ar)^3 = 216 \\Rightarrow ar = 6$\n" +
+              "Substitusi: $a = 6/r$, lalu $\\frac{6}{r}(1 + r + r^2) = 26$\n" +
+              "$\\Rightarrow 6 + 6r + 6r^2 = 26r \\Rightarrow 6r^2 - 20r + 6 = 0$\n" +
+              "Solusi: $r = 3$, $a = 2$, barisan: $2, 6, 18$, maka $2 + 18 = 20$"
+  },
+{
+    question: "Pada barisan aritmetika, nilai suku ke-25 adalah tiga kali nilai suku ke-5.\nSuku yang bernilai dua kali suku pertama adalah suku ke- ….",
+    options: [
+      "5",
+      "7",
+      "9",
+      "11",
+      "13"
+    ],
+    answer: 1,
+    solution: "Gunakan rumus $U_n = a + (n - 1)b$.\n" +
+              "Diketahui: $U_{25} = 3U_5 \\Rightarrow a + 24b = 3(a + 4b) \\Rightarrow a = 6b$\n" +
+              "Dua kali suku pertama: $U_n = 2a = 12b$\n" +
+              "$\\Rightarrow a + (n - 1)b = 12b \\Rightarrow 6b + (n - 1)b = 12b$\n" +
+              "$\\Rightarrow (n + 5)b = 12b \\Rightarrow n = 7$"
+  },
+{
+    question: "Hasil produksi pakaian seragam sekolah putih abu-abu yang dibuat oleh siswa-siswi SMK Jurusan Tata Busana pada bulan pertama menghasilkan 80 stel. Setiap bulan berikutnya, hasil produksi meningkat sebanyak 10 stel sehingga membentuk deret aritmatika. Banyak hasil produksi selama 6 bulan pertama adalah …. stel",
+    options: ["480", "510", "590", "630", "660"],
+    answer: 3,
+    solution:
+      "Diketahui a = 80, b = 10, n = 6\n" +
+      "Gunakan rumus jumlah deret aritmetika: $S_n = \\frac{n}{2}(2a + (n - 1)b)$\n" +
+      "$S_6 = \\frac{6}{2}(2 \\cdot 80 + 5 \\cdot 10) = 3(160 + 50) = 3 \\cdot 210 = 630$"
+  },
+{
+    question: "Diketahui $\\cos(A - B) = \\frac{3}{5}$ dan $\\cos A \\cdot \\cos B = \\frac{7}{25}$. Nilai $\\tan A \\cdot \\tan B = \\dots$",
+    options: ["$\\frac{3}{2}$", "$\\frac{5}{4}$", "$\\frac{8}{7}$", "$\\frac{9}{5}$", "$\\frac{7}{8}$"],
+    answer: 2,
+    solution:
+      "Gunakan rumus identitas trigonometri: \n" +
+      "$\\cos(A - B) = \\cos A \\cos B + \\sin A \\sin B$\n" +
+      "Substitusi nilai: $\\frac{3}{5} = \\frac{7}{25} + \\sin A \\sin B$\n" +
+      "$\\Rightarrow \\sin A \\sin B = \\frac{8}{25}$\n" +
+      "$\\tan A \\cdot \\tan B = \\frac{\\sin A \\cdot \\sin B}{\\cos A \\cdot \\cos B} = \\frac{8/25}{7/25} = \\frac{8}{7}$"
+  },
+{
+    question: "Dua kelompok anak masing-masing terdiri dari 4 anak memiliki rata-rata berat badan 30 kg dan 33 kg. Jika masing-masing kelompok menukar satu anak dan rata-rata kedua kelompok menjadi sama, berapakah selisih berat badan kedua anak yang ditukar?",
+    options: ["3 kg", "4 kg", "6 kg", "9 kg", "12 kg"],
+    answer: 2,
+    solution:
+      "Total berat awal:\nKelompok A = 4×30 = 120 kg\nKelompok B = 4×33 = 132 kg\n" +
+      "Misal anak yang ditukar beratnya x (dari A) dan y (dari B):\n" +
+      "Setelah tukar: A = 120 - x + y, B = 132 - y + x\n" +
+      "Rata-rata sama: (120 - x + y) = (132 - y + x)\n" +
+      "→ 2y - 2x = 12 → y - x = 6\n" +
+      "Jadi, selisih berat = 6 kg"
+  },
+{
+    question: "Seorang anak menabung di suatu bank dengan selisih kenaikan tabungan antarbulan tetap. Pada bulan pertama sebesar Rp50.000,00, bulan kedua Rp55.000,00, bulan ketiga Rp60.000,00, dan seterusnya. Jika menabung selama dua tahun, berapa besar total tabungannya?",
+    options: [
+      "Rp1.800.000,00",
+      "Rp2.000.000,00",
+      "Rp2.400.000,00",
+      "Rp2.580.000,00",
+      "Rp3.000.000,00"
+    ],
+    answer: 3,
+    solution:
+      "Gunakan rumus jumlah deret aritmetika:\n" +
+      "S_n = n/2 × (2a + (n - 1)b)\n" +
+      "a = 50.000, b = 5.000, n = 24\n" +
+      "S = 12 × (100.000 + 115.000) = 12 × 215.000 = Rp2.580.000,00"
+  },
+{
+    question: "Seutas tali dipotong menjadi 4 bagian yang membentuk barisan geometri. Jika potongan terpendek adalah 2 cm dan potongan terpanjang adalah 54 cm, berapakah panjang seluruh tali sebelum dipotong?",
+    options: ["60 cm", "64 cm", "72 cm", "80 cm", "90 cm"],
+    answer: 3,
+    solution:
+      "Barisan geometri: a = 2, ar^3 = 54\n" +
+      "2r^3 = 54 → r^3 = 27 → r = 3\n" +
+      "Empat potongan: 2, 6, 18, 54\n" +
+      "Jumlah = 2 + 6 + 18 + 54 = 80 cm"
+  },
+{
+    question: "-3(4x − 1) = 1 − 10(x − 1), himpunan penyelesaiannya adalah...",
+    options: ["x = 4", "x = -2", "x = -4", "x = 2", "x = 0"],
+    answer: 2,
+    solution:
+      "-3(4x − 1) = 1 − 10(x − 1)\n" +
+      "→ -12x + 3 = 1 - 10x + 10\n" +
+      "→ -12x + 3 = 11 - 10x\n" +
+      "→ -2x = 8 → x = -4"
+  },
+{
+    question: "3(x + 7) = 4 − 2(x + 10), himpunan penyelesaiannya adalah...",
+    options: [
+      "x = -37/5",
+      "x = 37/5",
+      "x = -27/5",
+      "x = -5/37",
+      "x = 5/37"
+    ],
+    answer: 0,
+    solution:
+      "3(x + 7) = 4 - 2(x + 10)\n" +
+      "→ 3x + 21 = 4 - 2x - 20\n" +
+      "→ 3x + 21 = -2x - 16\n" +
+      "→ 5x = -37 → x = -37/5"
+  }
+];
+
+let current = 0;
+let score = 0;
+let nama = "";
+let jawabanUser = [];
+
+function mulaiKuis() {
+  nama = document.getElementById("nama").value.trim();
+  if (nama === "") return alert("Nama wajib diisi!");
+  document.getElementById("start-screen").classList.add("hidden");
+  document.getElementById("quiz-screen").classList.remove("hidden");
+  document.getElementById("display-nama").textContent = nama;
+  tampilSoal();
+}
+
+function tampilSoal() {
+  const q = questions[current];
+  document.getElementById("soal").innerHTML = q.question;
+  const opsiDiv = document.getElementById("opsi");
+  opsiDiv.innerHTML = "";
+  q.options.forEach((op, i) => {
+    const label = document.createElement("label");
+    label.innerHTML = `<input type="radio" name="opsi" value="${i}" onclick="aktifkan()"> ${op}`;
+    label.classList.add("option");
+    opsiDiv.appendChild(label);
+  });
+  MathJax.typesetPromise();
+}
+
+function aktifkan() {
+  document.getElementById("lanjut").disabled = false;
+}
+
+function lanjut() {
+  const selected = document.querySelector('input[name="opsi"]:checked');
+  if (!selected) return;
+  const val = parseInt(selected.value);
+  if (val === questions[current].answer) score++;
+  jawabanUser.push(val);
+  current++;
+  document.getElementById("lanjut").disabled = true;
+  if (current < questions.length) {
+    tampilSoal();
+  } else {
+    selesai();
+  }
+}
+
+function selesai() {
+  document.getElementById("quiz-screen").classList.add("hidden");
+  document.getElementById("hasil-screen").classList.remove("hidden");
+  document.getElementById("skor-akhir").textContent = score + " dari " + questions.length;
+  kirimData();
+}
+
+function kirimData() {
+  fetch("https://script.google.com/macros/s/AKfycbySXyLvdpnWD0evpIxkNgcYMV9BzaD1eQIo6vEMQmR4c4hjrR70acRlZjhV-uT9AiJVkg/exec", {
+    method: "POST",
+    body: JSON.stringify({ nama: nama, skor: score, jawaban: jawabanUser })
+  });
+  fetch("https://script.google.com/macros/s/AKfycbySXyLvdpnWD0evpIxkNgcYMV9BzaD1eQIo6vEMQmR4c4hjrR70acRlZjhV-uT9AiJVkg/exec?action=leaderboard")
+    .then(res => res.json())
+    .then(data => {
+      const tbody = document.getElementById("leaderboard-body");
+      tbody.innerHTML = "";
+      data.forEach(row => {
+        tbody.innerHTML += `<tr><td>${row.nama}</td><td>${row.skor}</td></tr>`;
+      });
+    });
+}
+</script>
+</body>
+</html>
