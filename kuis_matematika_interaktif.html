@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kuis Matematika Interaktif</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+    .hidden { display: none; }
+    .question { margin: 20px 0; }
+    button { margin-top: 20px; padding: 10px 20px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+  </style>
+</head>
+<body>
+  <h2>Kuis Matematika</h2>
+
+  <div id="login">
+    <label>Nama Anda:</label><br>
+    <input type="text" id="nama" /><br>
+    <button onclick="mulaiKuis()">Mulai Kuis</button>
+  </div>
+
+  <div id="kuis" class="hidden">
+    <div id="infoPeserta"></div>
+    <div class="question" id="soal"></div>
+    <div id="opsi"></div>
+    <button id="btnSolusi" onclick="tampilkanSolusi()" disabled>Lihat Solusi</button>
+    <div id="solusi" style="margin-top:10px;"></div>
+    <button onclick="lanjutSoal()">Lanjut ke Soal Berikutnya</button>
+  </div>
+
+  <div id="hasil" class="hidden">
+    <h3>Skor Akhir:</h3>
+    <div id="skor"></div>
+    <p>Jawaban Anda telah dikirim.</p>
+    <h3>🏆 Leaderboard 10 Teratas</h3>
+    <div id="leaderboard">Memuat...</div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "Sederhanakan bentuk: $3x + 5 - 2x + 7$",
+        options: ["$x + 12$", "$5x + 2$", "$x + 2$", "$x - 2$"],
+        answer: 0,
+        solution: "Gabungkan suku sejenis: $3x - 2x = x$, $5 + 7 = 12$, jadi hasil: $x + 12$."
+      },
+      {
+        question: "Jika $a = 2$ dan $b = 3$, maka nilai dari $2a^2 + 3b$ adalah ...",
+        options: ["17", "15", "18", "21"],
+        answer: 2,
+        solution: "$2a^2 + 3b = 2(2)^2 + 3(3) = 2(4) + 9 = 8 + 9 = 17$."
+      },
+      {
+        question: "Hasil dari $(2x - 3)(x + 5)$ adalah ...",
+        options: [
+          "$2x^2 + 10x - 3x - 15$",
+          "$2x^2 + 7x - 15$",
+          "$2x^2 + 10x + 15$",
+          "$2x^2 + 7x + 15$"
+        ],
+        answer: 1,
+        solution: "Gunakan distributif: $(2x - 3)(x + 5) = 2x(x + 5) - 3(x + 5) = 2x^2 + 10x - 3x - 15 = 2x^2 + 7x - 15$."
+      },
+      {
+        question: "Suku ke-5 dari barisan aritmetika $3, 7, 11, ...$ adalah ...",
+        options: ["15", "17", "19", "23"],
+        answer: 2,
+        solution: "Un = a + (n-1)d = 3 + (5-1)(4) = 3 + 16 = 19."
+      },
+      {
+        question: "Jika $f(x) = 2x^2 - 3x + 1$, maka $f(2) = $ ...",
+        options: ["3", "5", "7", "11"],
+        answer: 1,
+        solution: "$f(2) = 2(2)^2 - 3(2) + 1 = 8 - 6 + 1 = 3$."
+      }
+    ];
+
+    let nama = "";
+    let current = 0;
+    let skor = 0;
+    let jawabanPengguna = [];
+
+    function mulaiKuis() {
+      nama = document.getElementById("nama").value;
+      if (!nama) return alert("Masukkan nama terlebih dahulu!");
+      document.getElementById("login").classList.add("hidden");
+      document.getElementById("kuis").classList.remove("hidden");
+      document.getElementById("infoPeserta").innerText = `Nama: ${nama}`;
+      tampilkanSoal();
+    }
+
+    function tampilkanSoal() {
+      const q = questions[current];
+      document.getElementById("soal").innerHTML = q.question;
+      let opsiHTML = "";
+      q.options.forEach((opt, i) => {
+        opsiHTML += `<label><input type='radio' name='opsi' value='${i}' onchange='pilihJawaban(${i})'/> ${opt}</label><br>`;
+      });
+      document.getElementById("opsi").innerHTML = opsiHTML;
+      document.getElementById("solusi").innerHTML = "";
+      document.getElementById("btnSolusi").disabled = true;
+      MathJax.typeset();
+    }
+
+    function pilihJawaban(index) {
+      jawabanPengguna[current] = index;
+      if (index === questions[current].answer) skor++;
+      document.getElementById("btnSolusi").disabled = false;
+    }
+
+    function tampilkanSolusi() {
+      document.getElementById("solusi").innerHTML = questions[current].solution;
+      MathJax.typeset();
+    }
+
+    function lanjutSoal() {
+      current++;
+      if (current < questions.length) {
+        tampilkanSoal();
+      } else {
+        selesai();
+      }
+    }
+
+    function selesai() {
+      document.getElementById("kuis").classList.add("hidden");
+      document.getElementById("hasil").classList.remove("hidden");
+      document.getElementById("skor").innerText = `${skor} dari ${questions.length}`;
+      kirimJawaban();
+      tampilkanLeaderboard();
+    }
+
+    function kirimJawaban() {
+      fetch("https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec", {
+        method: "POST",
+        body: JSON.stringify({
+          nama: nama,
+          skor: skor,
+          jawaban: jawabanPengguna
+        }),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+    }
+
+    function tampilkanLeaderboard() {
+      fetch("https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec?action=leaderboard")
+        .then(res => res.json())
+        .then(data => {
+          let html = '<table><tr><th>Nama</th><th>Skor</th></tr>';
+          data.forEach(row => {
+            html += `<tr><td>${row.nama}</td><td>${row.skor}</td></tr>`;
+          });
+          html += '</table>';
+          document.getElementById("leaderboard").innerHTML = html;
+        });
+    }
+  </script>
+</body>
+</html>
