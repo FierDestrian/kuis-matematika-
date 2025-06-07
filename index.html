@@ -742,24 +742,26 @@ function pilih(index, value) {
 function kirimJawaban() {
   const skor = questions.reduce((sum, q, i) => sum + (q.type === "pg" && jawaban[i] === q.answer ? 1 : 0), 0);
   const nilai = skor / 0.35;
+
   document.getElementById("kuis").classList.add("hidden");
   document.getElementById("hasil").classList.remove("hidden");
   document.getElementById("skor").innerText = skor;
   document.getElementById("nilai").innerText = nilai.toFixed(2);
 
- const params = new URLSearchParams({
-  nama: nama,
-  skor: skor,
-  nilai: nilai.toFixed(2),
-  jawaban: JSON.stringify(jawaban)
-});
+  const params = new URLSearchParams({
+    nama: nama,
+    skor: skor,
+    nilai: nilai.toFixed(2),
+    jawaban: JSON.stringify(jawaban)
+  });
 
-fetch("https://script.google.com/macros/s/AKfycbySXyLvdpnWD0evpIxkNgcYMV9BzaD1eQIo6vEMQmR4c4hjrR70acRlZjhV-uT9AiJVkg/exec?" + params.toString())
-  .then(res => res.text())
-  .then(text => console.log("Respon:", text))
-  .catch(err => console.error("Gagal:", err));
-
+  // Membuat iframe dummy untuk kirim data GET tanpa CORS
+  const iframe = document.createElement("iframe");
+  iframe.style.display = "none";
+  iframe.src = "https://script.google.com/macros/s/AKfycbySXyLvdpnWD0evpIxkNgcYMV9BzaD1eQIo6vEMQmR4c4hjrR70acRlZjhV-uT9AiJVkg/exec?" + params.toString();
+  document.body.appendChild(iframe);
 }
+
 </script>
 
 </body>
