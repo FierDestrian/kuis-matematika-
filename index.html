@@ -747,7 +747,7 @@ function kirimJawaban() {
   document.getElementById("skor").innerText = skor;
   document.getElementById("nilai").innerText = nilai.toFixed(2);
 
-  const params = new URLSearchParams({
+ const params = new URLSearchParams({
   nama: nama,
   skor: skor,
   nilai: nilai.toFixed(2),
@@ -755,9 +755,9 @@ function kirimJawaban() {
 });
 
 fetch("https://script.google.com/macros/s/AKfycbySXyLvdpnWD0evpIxkNgcYMV9BzaD1eQIo6vEMQmR4c4hjrR70acRlZjhV-uT9AiJVkg/exec?" + params.toString())
-  .then(r => r.text())
-  .then(console.log)
-  .catch(console.error);
+  .then(res => res.text())
+  .then(text => console.log("Respon:", text))
+  .catch(err => console.error("Gagal:", err));
 
 }
 </script>
