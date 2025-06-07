@@ -747,16 +747,18 @@ function kirimJawaban() {
   document.getElementById("skor").innerText = skor;
   document.getElementById("nilai").innerText = nilai.toFixed(2);
 
-  fetch("https://corsproxy.io/?https://script.google.com/macros/s/AKfycbySXyLvdpnWD0evpIxkNgcYMV9BzaD1eQIo6vEMQmR4c4hjrR70acRlZjhV-uT9AiJVkg/exec", {
-    method: "POST",
-    body: JSON.stringify({
-      nama: nama,
-      skor: skor,
-      nilai: nilai,
-      jawaban: jawaban
-    }),
-    headers: { "Content-Type": "application/json" }
-  });
+  const params = new URLSearchParams({
+  nama: nama,
+  skor: skor,
+  nilai: nilai.toFixed(2),
+  jawaban: JSON.stringify(jawaban)
+});
+
+fetch("https://script.google.com/macros/s/AKfycbySXyLvdpnWD0evpIxkNgcYMV9BzaD1eQIo6vEMQmR4c4hjrR70acRlZjhV-uT9AiJVkg/exec?" + params.toString())
+  .then(r => r.text())
+  .then(console.log)
+  .catch(console.error);
+
 }
 </script>
 
