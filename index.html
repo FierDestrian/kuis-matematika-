@@ -1,53 +1,54 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Kuis Matematika Kelas X</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ASESMEN AKHIR TAHUN (AAT) SMA PASUNDAN TANJUNGSARI</title>
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <style>
-    body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; }
+    body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; background-color: #fefefe; }
     .hidden { display: none; }
-    .question { font-size: 18px; margin: 20px 0; }
-    .option { margin: 5px 0; }
-    #leaderboard { margin-top: 30px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-    th { background-color: #f5f5f5; }
-    .btn { padding: 8px 16px; margin: 10px 5px; }
+    .question-box { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 8px; background: #fff; }
+    .nav-buttons { margin: 10px 0; display: flex; flex-wrap: wrap; gap: 5px; }
+    .nav-buttons button { padding: 6px 12px; border: none; border-radius: 5px; cursor: pointer; }
+    .not-answered { background-color: #f87171; color: white; }
+    .answered { background-color: #4ade80; color: white; }
+    .btn { margin-top: 20px; padding: 10px 20px; }
+    .header-img { width: 100%; max-height: 200px; object-fit: cover; margin-bottom: 20px; }
   </style>
 </head>
 <body>
+<img class="header-img" src="https://drive.google.com/uc?export=view&id=1KSHKQEetot5TM1BWFW1t4y1dXBoIbFDI" alt="Header AAT">
+<h2>ASESMEN AKHIR TAHUN (AAT)<br>SMA PASUNDAN TANJUNGSARI</h2>
 
-<h1>Kuis Matematika Kelas X</h1>
-<div id="start-screen">
-  <p>Masukkan nama kamu untuk memulai kuis:</p>
-  <input type="text" id="nama" placeholder="Nama lengkap" />
-  <button class="btn" onclick="mulaiKuis()">Mulai Kuis</button>
+<div id="login">
+  <label>Nama Anda:</label><br>
+  <input type="text" id="nama" /><br>
+  <button onclick="mulaiKuis()">Mulai</button>
 </div>
 
-<div id="quiz-screen" class="hidden">
-  <p><strong>Nama:</strong> <span id="display-nama"></span></p>
-  <div id="soal"></div>
-  <div id="opsi"></div>
-  <button class="btn" id="lanjut" onclick="lanjut()" disabled>Lanjut</button>
+<div id="kuis" class="hidden">
+  <p><strong>Nama:</strong> <span id="displayNama"></span></p>
+  <div id="navigasi" class="nav-buttons"></div>
+  <div id="soalContainer"></div>
+  <button class="btn" onclick="kirimJawaban()">Kirim Jawaban</button>
 </div>
 
-<div id="hasil-screen" class="hidden">
-  <h2>Skor Akhir Kamu: <span id="skor-akhir"></span></h2>
-  <div id="leaderboard">
-    <h3>Leaderboard 10 Besar</h3>
-    <table>
-      <thead><tr><th>Nama</th><th>Skor</th></tr></thead>
-      <tbody id="leaderboard-body"></tbody>
-    </table>
-  </div>
+<div id="hasil" class="hidden">
+  <h3>Skor Akhir: <span id="skor"></span></h3>
+  <h3>Nilai: <span id="nilai"></span></h3>
 </div>
 
 <script>
 const questions = [
-   {
+  {
     question: "Diketahui nilai dari $\\sin \\beta = \\frac{2}{3}$. Tentukan nilai dari $\\cos \\beta$ jika $\\beta$ adalah sudut lancip.",
     options: [
       "$\\frac{\\sqrt{5}}{3}$",
@@ -631,75 +632,85 @@ const questions = [
   }
 ];
 
-let current = 0;
-let score = 0;
+let jawaban = Array(questions.length).fill(null);
 let nama = "";
-let jawabanUser = [];
 
 function mulaiKuis() {
   nama = document.getElementById("nama").value.trim();
-  if (nama === "") return alert("Nama wajib diisi!");
-  document.getElementById("start-screen").classList.add("hidden");
-  document.getElementById("quiz-screen").classList.remove("hidden");
-  document.getElementById("display-nama").textContent = nama;
-  tampilSoal();
+  if (!nama) return alert("Nama wajib diisi!");
+  document.getElementById("login").classList.add("hidden");
+  document.getElementById("kuis").classList.remove("hidden");
+  document.getElementById("displayNama").innerText = nama;
+  renderNavigasi();
+  renderSemuaSoal();
 }
 
-function tampilSoal() {
-  const q = questions[current];
-  document.getElementById("soal").innerHTML = q.question;
-  const opsiDiv = document.getElementById("opsi");
-  opsiDiv.innerHTML = "";
-  q.options.forEach((op, i) => {
-    const label = document.createElement("label");
-    label.innerHTML = `<input type="radio" name="opsi" value="${i}" onclick="aktifkan()"> ${op}`;
-    label.classList.add("option");
-    opsiDiv.appendChild(label);
+function renderNavigasi() {
+  const nav = document.getElementById("navigasi");
+  nav.innerHTML = "";
+  questions.forEach((_, i) => {
+    const btn = document.createElement("button");
+    btn.textContent = i + 1;
+    btn.className = jawaban[i] === null ? "not-answered" : "answered";
+    btn.onclick = () => scrollToSoal(i);
+    nav.appendChild(btn);
+  });
+}
+
+function renderSemuaSoal() {
+  const container = document.getElementById("soalContainer");
+  container.innerHTML = "";
+  questions.forEach((q, index) => {
+    const box = document.createElement("div");
+    box.className = "question-box";
+    box.id = `soal-${index}`;
+
+    const qText = document.createElement("div");
+    qText.innerHTML = `<strong>Soal ${index + 1}:</strong> ${q.question}`;
+    box.appendChild(qText);
+
+    q.options.forEach((opt, i) => {
+      const wrapper = document.createElement("div");
+      const optLabel = document.createElement("label");
+      optLabel.innerHTML = `<input type='radio' name='q${index}' value='${i}' onchange='pilih(${index}, ${i})'> ${opt}`;
+      wrapper.appendChild(optLabel);
+      box.appendChild(wrapper);
+    });
+
+    container.appendChild(box);
   });
   MathJax.typesetPromise();
 }
 
-function aktifkan() {
-  document.getElementById("lanjut").disabled = false;
+function scrollToSoal(index) {
+  document.getElementById(`soal-${index}`).scrollIntoView({ behavior: 'smooth' });
 }
 
-function lanjut() {
-  const selected = document.querySelector('input[name="opsi"]:checked');
-  if (!selected) return;
-  const val = parseInt(selected.value);
-  if (val === questions[current].answer) score++;
-  jawabanUser.push(val);
-  current++;
-  document.getElementById("lanjut").disabled = true;
-  if (current < questions.length) {
-    tampilSoal();
-  } else {
-    selesai();
-  }
+function pilih(index, value) {
+  jawaban[index] = value;
+  renderNavigasi();
 }
 
-function selesai() {
-  document.getElementById("quiz-screen").classList.add("hidden");
-  document.getElementById("hasil-screen").classList.remove("hidden");
-  document.getElementById("skor-akhir").textContent = score + " dari " + questions.length;
-  kirimData();
-}
+function kirimJawaban() {
+  const skor = jawaban.reduce((sum, val, i) => sum + (val === questions[i].answer ? 1 : 0), 0);
+  const nilai = skor / 0.35;
+  document.getElementById("kuis").classList.add("hidden");
+  document.getElementById("hasil").classList.remove("hidden");
+  document.getElementById("skor").innerText = skor;
+  document.getElementById("nilai").innerText = nilai.toFixed(2);
 
-function kirimData() {
   fetch("https://script.google.com/macros/s/AKfycbySXyLvdpnWD0evpIxkNgcYMV9BzaD1eQIo6vEMQmR4c4hjrR70acRlZjhV-uT9AiJVkg/exec", {
     method: "POST",
-    body: JSON.stringify({ nama: nama, skor: score, jawaban: jawabanUser })
+    body: JSON.stringify({
+      nama: nama,
+      skor: skor,
+      nilai: nilai,
+      jawaban: jawaban
+    }),
+    headers: { "Content-Type": "application/json" }
   });
-  fetch("https://script.google.com/macros/s/AKfycbySXyLvdpnWD0evpIxkNgcYMV9BzaD1eQIo6vEMQmR4c4hjrR70acRlZjhV-uT9AiJVkg/exec?action=leaderboard")
-    .then(res => res.json())
-    .then(data => {
-      const tbody = document.getElementById("leaderboard-body");
-      tbody.innerHTML = "";
-      data.forEach(row => {
-        tbody.innerHTML += `<tr><td>${row.nama}</td><td>${row.skor}</td></tr>`;
-      });
-    });
 }
 </script>
+
 </body>
 </html>
