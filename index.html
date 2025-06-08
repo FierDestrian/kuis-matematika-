@@ -755,7 +755,7 @@ function kirimJawaban() {
     jawaban: JSON.stringify(jawaban)
   });
 
-  // Membuat iframe dummy untuk kirim data GET tanpa CORS
+  // Gunakan iframe tersembunyi untuk mengirim data tanpa CORS
   const iframe = document.createElement("iframe");
   iframe.style.display = "none";
   iframe.src = "https://script.google.com/macros/s/AKfycbySXyLvdpnWD0evpIxkNgcYMV9BzaD1eQIo6vEMQmR4c4hjrR70acRlZjhV-uT9AiJVkg/exec?" + params.toString();
