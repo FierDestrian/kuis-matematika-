@@ -725,7 +725,10 @@ function renderSemuaSoal() {
 
     container.appendChild(box);
   });
+  if (window.MathJax && MathJax.typeset) {
   MathJax.typeset();
+}
+
 }
 
 function scrollToSoal(index) {
