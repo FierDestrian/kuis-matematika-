@@ -33,7 +33,7 @@
 </head>
 <body>
 <img class="header-img" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5-_uGV3JJNFVInjBoIpdSr-O2VPmlDF3wgoIeJ8pJwARKSzHaRCYfVGBnyag0SX0CDfVj1PBmWUIr_XC6kQZOJE9SXaJkFLv-GvWP1xkD-k2a55u7RmRyN6DJ1rsAYAmPA5MRFhoyw3kGdOSxI8npUJC5zK2TwStV2oKukQqGVgbzOl1BOvJUCQJzImU/s1600/Foto%20dari%20Fier%20Destrian%20%281%29.jpg" alt="Header AAT">
-<h2>ASESMEN AKHIR TAHUN (AAT)<br>SMA PASUNDAN TANJUNGSARI</h2>
+<h2>ASESMEN AKHIR TAHUN (AAT)<br>SMA PASUNDAN TANJUNGSARI<br>KELAS X</h2>
 
 <div id="login">
   <label>Nama Anda:</label><br>
@@ -679,7 +679,7 @@ let jawaban = Array(questions.length).fill(null);
 let nama = "";
 
 function mulaiKuis() {
-  nama = document.getElementById("nama").value.trim();
+  nama = document.getElementById("nama").value.trim() + " Kelas X";
   if (!nama) return alert("Nama wajib diisi!");
   document.getElementById("login").classList.add("hidden");
   document.getElementById("kuis").classList.remove("hidden");
