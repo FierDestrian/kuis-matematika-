@@ -9,7 +9,11 @@
       tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
       svg: { fontCache: 'global' },
       startup: {
-        typeset: false
+        typeset: false,
+        ready: () => {
+          MathJax.startup.defaultReady();
+          window.MathJaxReady = true;
+        }
       }
     };
   </script>
@@ -50,8 +54,8 @@
 </div>
 
 <script>
-const questions = [..
-{
+const questions = [
+ {
     type: "pg",
     question: "Diketahui nilai dari $\\sin \\beta = \\frac{2}{3}$. Tentukan nilai dari $\\cos \\beta$ jika $\\beta$ adalah sudut lancip.",
     options: [
@@ -669,7 +673,7 @@ const questions = [..
       "→ 3x + 21 = -2x - 16\n" +
       "→ 5x = -37 → x = -37/5"
   }
-.]; // pertahankan pertanyaan kamu di sini
+];
 
 let jawaban = Array(questions.length).fill(null);
 let nama = "";
@@ -728,10 +732,10 @@ function renderSemuaSoal() {
 
     container.appendChild(box);
   });
-  if (window.MathJax && MathJax.typeset) {
-  MathJax.typeset();
-}
 
+  if (window.MathJax && MathJax.typeset) {
+    MathJax.typeset();
+  }
 }
 
 function scrollToSoal(index) {
@@ -765,6 +769,5 @@ function kirimJawaban() {
   document.body.appendChild(iframe);
 }
 </script>
-
 </body>
 </html>
