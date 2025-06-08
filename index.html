@@ -4,13 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ASESMEN AKHIR TAHUN (AAT) SMA PASUNDAN TANJUNGSARI</title>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <script>
     window.MathJax = {
       tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
-      svg: { fontCache: 'global' }
+      svg: { fontCache: 'global' },
+      startup: {
+        typeset: false
+      }
     };
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
   <style>
     body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; background-color: #fefefe; }
     .hidden { display: none; }
@@ -47,8 +50,8 @@
 </div>
 
 <script>
-const questions = [
-   {
+const questions = [..
+{
     type: "pg",
     question: "Diketahui nilai dari $\\sin \\beta = \\frac{2}{3}$. Tentukan nilai dari $\\cos \\beta$ jika $\\beta$ adalah sudut lancip.",
     options: [
@@ -666,7 +669,7 @@ const questions = [
       "→ 3x + 21 = -2x - 16\n" +
       "→ 5x = -37 → x = -37/5"
   }
-];
+.]; // pertahankan pertanyaan kamu di sini
 
 let jawaban = Array(questions.length).fill(null);
 let nama = "";
@@ -725,13 +728,8 @@ function renderSemuaSoal() {
 
     container.appendChild(box);
   });
-  MathJax.startup.promise.then(() => {
-  MathJax.typeset();
-});
-
+  MathJax.startup.promise.then(() => MathJax.typeset());
 }
-
-
 
 function scrollToSoal(index) {
   document.getElementById(`soal-${index}`).scrollIntoView({ behavior: 'smooth' });
@@ -758,7 +756,6 @@ function kirimJawaban() {
     jawaban: JSON.stringify(jawaban)
   });
 
-  // Kirim data via iframe (bebas CORS)
   const iframe = document.createElement("iframe");
   iframe.style.display = "none";
   iframe.src = "https://script.google.com/macros/s/AKfycbwwswdmUdmDEoz66MlnRgFSmisF10ypWmUf0fVa3zLuRyDZQOtYPB205mmLDQ_fIztTJw/exec?" + params.toString();
